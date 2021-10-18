@@ -12,7 +12,7 @@ usersRouter.get("/", async function (req, res) {
 });
 
 usersRouter.post("/", async function (req, res) {
-  const { email, password, name } = req.body;
+  const { email, password, name, telephone } = req.body;
 
   if (email === undefined) {
     return res.status(401).json({
@@ -32,6 +32,12 @@ usersRouter.post("/", async function (req, res) {
     });
   }
 
+  if (telephone === undefined) {
+    return res.status(401).json({
+      message: "Campo Telefone não encontrado",
+    });
+  }
+
   const entityManager = getManager();
 
   const response = await entityManager.query(
@@ -39,12 +45,10 @@ usersRouter.post("/", async function (req, res) {
   );
 
   if (response.length === 0) {
-    const createdUser = await entityManager.query(
-      `INSERT INTO users (name, email, password) 
-      VALUES ('${name}', '${email}', '${password}' );`
+    await entityManager.query(
+      `INSERT INTO users (name, email, password, telephone) 
+      VALUES ('${name}', '${email}', '${password}', '${telephone}' );`
     );
-
-    console.log(createdUser);
 
     return res.status(200).json({
       message: "Usuario Criado",

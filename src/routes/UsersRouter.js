@@ -41,7 +41,7 @@ usersRouter.post("/", async function (req, res) {
   const entityManager = getManager();
 
   const response = await entityManager.query(
-    `SELECT * from users where email like '${email}' and password like '${password}' ;`
+    `SELECT * from users where email like '${email}' ;`
   );
 
   if (response.length === 0) {

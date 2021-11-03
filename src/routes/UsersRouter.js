@@ -89,13 +89,13 @@ usersRouter.post('/delete', async function (req, res) {
 usersRouter.post('/login', async function (req, res) {
   const { email, password } = req.body
 
-  if (email === undefined) {
+  if (email === undefined || email.length === 0) {
     return res.status(401).json({
       message: 'Campo Email não encontrado'
     })
   }
 
-  if (password === undefined) {
+  if (password === undefined || password.length === 0) {
     return res.status(401).json({
       message: 'Campo Senha não encontrado'
     })

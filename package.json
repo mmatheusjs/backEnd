@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon --es-module-specifier-resolution=node src/server.js"
+    "dev": "nodemon --es-module-specifier-resolution=node src/server.js"
   },
   "type": "module",
   "dependencies": {

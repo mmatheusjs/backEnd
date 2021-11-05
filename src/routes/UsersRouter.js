@@ -20,29 +20,27 @@ usersRouter.post('/', async function (req, res) {
     })
   }
 
-  if (name === undefined) {
+  if (name === undefined || name.length === 0) {
     return res.status(401).json({
       message: 'Campo Nome não encontrado'
     })
   }
 
-  if (password === undefined) {
+  if (password === undefined || password.length <= 4) {
     return res.status(401).json({
-      message: 'Campo Senha não encontrado'
+      message: 'Digite uma senha com no mínimo 4 caracteres'
     })
   }
 
-  if (telephone === undefined) {
+  if (telephone === undefined || telephone.length < 8) {
     return res.status(401).json({
-      message: 'Campo Telefone não encontrado'
+      message: 'Digite um telefone válido com no mínimo 8 digitos'
     })
   }
 
   const entityManager = getManager()
 
-  const response = await entityManager.query(
-    `SELECT * from users where email like '${email}' ;`
-  )
+  const response = await getUserByEmail(email)
 
   if (response.length === 0) {
     await entityManager.query(
@@ -50,15 +48,23 @@ usersRouter.post('/', async function (req, res) {
       VALUES ('${name}', '${email}', '${password}', '${telephone}' );`
     )
 
-    return res.status(200).json({
-      message: 'Usuario Criado'
-    })
+    const userData = await getUserByEmail(email)
+
+    return res.status(200).json(userData)
   } else {
     return res.status(401).json({
       message: 'Email Já cadastrado'
     })
   }
 })
+
+async function getUserByEmail(email) {
+  const entityManager = getManager()
+
+  return await entityManager.query(
+    `SELECT name, email, telephone, id from users where email like '${email}' ;`
+  )
+}
 
 usersRouter.post('/delete', async function (req, res) {
   const { id } = req.body
@@ -104,7 +110,7 @@ usersRouter.post('/login', async function (req, res) {
   const entityManager = getManager()
 
   const response = await entityManager.query(
-    `SELECT * from users where email like '${email}' and password like '${password}' ;`
+    `SELECT name, email, telephone, id from users where email like '${email}' and password like '${password}' ;`
   )
 
   if (response.length === 0) {

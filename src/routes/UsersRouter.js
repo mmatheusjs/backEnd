@@ -66,7 +66,7 @@ async function getUserByEmail(email) {
   )
 }
 
-usersRouter.post('/delete', async function (req, res) {
+usersRouter.delete('/delete', async function (req, res) {
   const { id } = req.body
 
   if (id === undefined) {
@@ -120,6 +120,50 @@ usersRouter.post('/login', async function (req, res) {
   }
 
   res.json(response)
+})
+
+usersRouter.put('/', async function (req, res) {
+  const { email, name, telephone, id } = req.body
+
+  if (email === undefined || email.length === 0) {
+    return res.status(400).json({
+      message: 'Campo Email não pode estar em branco'
+    })
+  }
+
+  if (name === undefined || name.length === 0) {
+    return res.status(400).json({
+      message: 'Campo Nome não pode estar em branco'
+    })
+  }
+
+  if (telephone === undefined || telephone.length < 8) {
+    return res.status(400).json({
+      message: 'Campo Telefone não ter menos que 8 caracteres'
+    })
+  }
+
+  if (id === undefined) {
+    return res.status(400).json({
+      message: 'Erro interno no sistema, tente logar novamente'
+    })
+  }
+
+  const entityManager = getManager()
+
+  const response = await entityManager.query(
+    `UPDATE users SET name ='${name}', email ='${email}', telephone ='${telephone}' WHERE id = ${id}`
+  )
+
+  if (response != undefined) {
+    return res.status(202).json({
+      message: 'Dados alterados'
+    })
+  } else {
+    return res.status(500).json({
+      message: 'Erro interno no sistema'
+    })
+  }
 })
 
 export default usersRouter

@@ -139,7 +139,7 @@ usersRouter.put('/', async function (req, res) {
 
   if (telephone === undefined || telephone.length < 8) {
     return res.status(400).json({
-      message: 'Campo Telefone não ter menos que 8 caracteres'
+      message: 'Campo Telefone não pode ter menos que 8 caracteres'
     })
   }
 

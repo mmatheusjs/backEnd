@@ -166,4 +166,45 @@ usersRouter.put('/', async function (req, res) {
   }
 })
 
+usersRouter.put('/change_password', async function (req, res) {
+  const { id, newPassword, oldPassword } = req.body
+
+  if (oldPassword === undefined || oldPassword.length <= 4) {
+    return res.status(401).json({
+      message: 'Digite a sua antiga senha corretamente'
+    })
+  }
+
+  if (newPassword === undefined || newPassword.length <= 4) {
+    return res.status(401).json({
+      message: 'Digite a sua nova senha com no mínimo 4 caracteres'
+    })
+  }
+
+  if (id === undefined) {
+    return res.status(400).json({
+      message: 'Erro interno no sistema, tente logar novamente'
+    })
+  }
+
+  const entityManager = getManager()
+
+  const response = await entityManager.query(
+    `SELECT id from users WHERE id = ${id} and password like '${oldPassword}'`
+  )
+
+  if (response.length === 0) {
+    return res.status(400).json({
+      message: 'A senha antiga está errada'
+    })
+  } else {
+    await entityManager.query(
+      `UPDATE users SET password ='${newPassword}' WHERE id = ${id}`
+    )
+    return res.status(200).json({
+      message: 'Senha alterada com sucesso'
+    })
+  }
+})
+
 export default usersRouter

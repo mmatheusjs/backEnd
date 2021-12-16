@@ -3,6 +3,29 @@ import { getManager } from 'typeorm'
 
 const groupsRouter = Router()
 
+groupsRouter.post('/adduser', async function (req, res) {
+  const entityManager = getManager()
+  const { manager_id, telephone } = req.body
+
+  const id = await entityManager.query(
+    `SELECT id from group_mass WHERE manager_id = ${manager_id}`
+  )
+
+  if (id.lenght === 0) {
+    return res.status(401).json({
+      message: 'Grupo não encontrado'
+    })
+  }
+  console.log(id[0].id)
+
+  await entityManager.query(
+    `UPDATE users SET group_id = ${id[0].id} WHERE telephone like '${telephone}'`
+  )
+  return res.status(200).json({
+    message: 'Usuário adicionado a um grupo'
+  })
+})
+
 groupsRouter.post('/', async function (req, res) {
   const entityManager = getManager()
   const { id, day_of_week, time_schedule, week_of_month } = req.body
